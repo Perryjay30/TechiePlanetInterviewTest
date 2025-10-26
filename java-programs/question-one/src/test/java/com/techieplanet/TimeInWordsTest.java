@@ -21,4 +21,20 @@ public class TimeInWordsTest {
         assertEquals("Ten minutes past five", TimeInWords.timeInWords(5, 10));
         assertEquals("Twenty-eight minutes past five", TimeInWords.timeInWords(5, 28));
     }
+
+    @Test
+    void testHalfPast() {
+        assertEquals("Half past five", TimeInWords.timeInWords(5, 30));
+    }
+
+    @Test
+    void testQuarterPast() {
+        assertEquals("Quarter past five", TimeInWords.timeInWords(5, 15));
+    }
+
+    @Test
+    void testQuarterTo() {
+        assertEquals("Quarter to six", TimeInWords.timeInWords(5, 45));
+        assertEquals("Quarter to one", TimeInWords.timeInWords(12, 45));
+    }
 }
