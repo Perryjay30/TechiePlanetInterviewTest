@@ -50,4 +50,15 @@ public class TimeInWordsTest {
         assertEquals("Thirteen minutes to six", TimeInWords.timeInWords(5, 47));
     }
 
+    @Test
+    void testInvalidHour() {
+        assertThrows(IllegalArgumentException.class, () -> TimeInWords.timeInWords(0, 10));
+        assertThrows(IllegalArgumentException.class, () -> TimeInWords.timeInWords(13, 10));
+    }
+
+    @Test
+    void testInvalidMinute() {
+        assertThrows(IllegalArgumentException.class, () -> TimeInWords.timeInWords(5, -1));
+        assertThrows(IllegalArgumentException.class, () -> TimeInWords.timeInWords(5, 60));
+    }
 }
