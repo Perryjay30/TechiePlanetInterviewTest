@@ -37,4 +37,17 @@ public class TimeInWordsTest {
         assertEquals("Quarter to six", TimeInWords.timeInWords(5, 45));
         assertEquals("Quarter to one", TimeInWords.timeInWords(12, 45));
     }
+
+    @Test
+    void testEdgeMinutes() {
+        assertEquals("One minute to six", TimeInWords.timeInWords(5, 59));
+        assertEquals("One minute to one", TimeInWords.timeInWords(12, 59));
+    }
+
+    @Test
+    void testToNextHour() {
+        assertEquals("Twenty minutes to six", TimeInWords.timeInWords(5, 40));
+        assertEquals("Thirteen minutes to six", TimeInWords.timeInWords(5, 47));
+    }
+
 }
