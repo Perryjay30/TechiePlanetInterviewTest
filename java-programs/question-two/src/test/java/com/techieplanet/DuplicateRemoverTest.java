@@ -76,4 +76,41 @@ public class DuplicateRemoverTest {
         int[][] out = DuplicateRemover.dedupePerRow(in);
         assertArrayEquals(expected, out[0]);
     }
+
+    @Test
+    void zerosAndNonZeros_mixed() {
+        int[] row = {0, 1, 0, 2, 0, 1, 2, 0};
+        int[] expected = {0, 1, 0, 2, 0, 0, 0, 0};
+        int[][] in = new int[][]{row};
+        int[][] out = DuplicateRemover.dedupePerRow(in);
+        assertArrayEquals(expected, out[0]);
+    }
+
+    @Test
+    void negativesAndExtremeInts_shouldWork() {
+        int min = Integer.MIN_VALUE;
+        int max = Integer.MAX_VALUE;
+        int[] row = {min, max, -1, 42, min, max, -1, 42};
+        int[] expected = {min, max, -1, 42, 0, 0, 0, 0};
+        int[][] in = new int[][]{row};
+        int[][] out = DuplicateRemover.dedupePerRow(in);
+        assertArrayEquals(expected, out[0]);
+    }
+
+    @Test
+    void inPlaceGuarantee_rowReferencesRemainSame() {
+        int[] r1 = {1, 1, 2};
+        int[] r2 = {3, 4, 4, 3};
+        int[][] in = new int[][]{r1, r2};
+
+        int[][] out = DuplicateRemover.dedupePerRow(in);
+
+        assertSame(in, out, "Outer array ref should be same");
+        assertSame(r1, out[0], "Row 0 should be modified in place");
+        assertSame(r2, out[1], "Row 1 should be modified in place");
+
+        assertArrayEquals(new int[]{1, 0, 2}, out[0]);
+        assertArrayEquals(new int[]{3, 4, 0, 0}, out[1]);
+    }
+
 }
