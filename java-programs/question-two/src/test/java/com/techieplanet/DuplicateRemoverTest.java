@@ -113,4 +113,41 @@ public class DuplicateRemoverTest {
         assertArrayEquals(new int[]{3, 4, 0, 0}, out[1]);
     }
 
+    @Test
+    void longDeterministicRow_threeRepeatsOf50Distinct_shouldZeroLast100() {
+        int distinct = 50;
+        int repeats = 3;
+        int[] row = new int[distinct * repeats];
+        for (int r = 0; r < repeats; r++) {
+            for (int i = 0; i < distinct; i++) {
+                row[r * distinct + i] = i;
+            }
+        }
+
+        int[][] in = new int[][]{row};
+        int[][] out = DuplicateRemover.dedupePerRow(in);
+
+        for (int i = 0; i < distinct; i++) {
+            assertEquals(i, out[0][i], "First occurrence must remain");
+        }
+        for (int i = distinct; i < row.length; i++) {
+            assertEquals(0, out[0][i], "Subsequent duplicates must be zero");
+        }
+    }
+
+    @Test
+    void varyingRowLengths_multipleRows() {
+        int[][] in = {
+                {1, 2, 3},
+                {5, 5},
+                {7},
+                {8, 9, 8, 9, 8, 9, 8}
+        };
+        int[][] out = DuplicateRemover.dedupePerRow(in);
+
+        assertArrayEquals(new int[]{1, 2, 3}, out[0]);
+        assertArrayEquals(new int[]{5, 0}, out[1]);
+        assertArrayEquals(new int[]{7}, out[2]);
+        assertArrayEquals(new int[]{8, 9, 0, 0, 0, 0, 0}, out[3]);
+    }
 }
