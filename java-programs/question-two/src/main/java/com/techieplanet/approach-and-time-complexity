@@ -1,0 +1,28 @@
+Approach (brief)
+
+ - Process each row independently.
+
+ - Track seen values for the row using a custom integer hash set (open addressing, linear probing).
+
+ - For each element (left→right):
+
+   - If add(value) returns true → first time: keep it.
+
+   - If false → duplicate: set element to 0.
+
+ - Works in-place (no extra copies of the rows).
+
+Correctness notes
+
+ - Handles any integer value (including 0) as a normal value. If the original array contains zeros, the first zero is kept and later zeros in that row are set to 0 (already zero, so unchanged), which matches the “replace duplicates with 0” rule.
+
+ - Replacement zeros do not pollute the set since we always check against the original value before mutating.
+
+Time & Space Complexity
+
+ - Let T = total number of elements across all rows.
+
+ - Time (expected): O(T) — each element causes an expected O(1) hash probe/insert.
+ - Worst-case: O(T * α) where α can degrade if all keys collide (pathological inputs), but the mixer and resizing keep α close to 1 in practice.
+
+ - Space: For a row of length m, the set uses O(u) where u ≤ m (unique values in that row). Total peak space is dominated by the largest row being processed.
