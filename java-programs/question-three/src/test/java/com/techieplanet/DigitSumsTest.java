@@ -54,4 +54,42 @@ class DigitSumsTest {
         assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive("1_23"));
     }
 
+
+    @Test
+    void digitalRoot_exampleFromPrompt() {
+        assertEquals(5, DigitSums.digitalRoot("1234445"));
+    }
+
+    @Test
+    void digitalRoot_singleDigit_stable() {
+        assertEquals(7, DigitSums.digitalRoot("7"));
+        assertEquals(0, DigitSums.digitalRoot("0"));
+    }
+
+    @Test
+    void digitalRoot_leadingZeros() {
+        assertEquals(9, DigitSums.digitalRoot("00045"));
+    }
+
+    @Test
+    void digitalRoot_allNinesLength100_isNine() {
+        StringBuilder sb = new StringBuilder(100);
+        for (int i = 0; i < 100; i++) sb.append('9');
+        assertEquals(9, DigitSums.digitalRoot(sb.toString()));
+    }
+
+    @Test
+    void digitalRoot_various() {
+        assertEquals(1, DigitSums.digitalRoot("10"));
+        assertEquals(2, DigitSums.digitalRoot("2000"));
+        assertEquals(9, DigitSums.digitalRoot("999999999"));
+        assertEquals(4, DigitSums.digitalRoot("1111"));
+    }
+
+    @Test
+    void digitalRoot_invalidPropagatesFromSum() {
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.digitalRoot(null));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.digitalRoot(""));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.digitalRoot("1x2"));
+    }
 }
