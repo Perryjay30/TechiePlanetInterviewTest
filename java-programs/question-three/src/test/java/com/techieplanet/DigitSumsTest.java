@@ -26,4 +26,32 @@ class DigitSumsTest {
         assertEquals(1, DigitSums.sumDigitsRecursive("0000001"));
     }
 
+    @Test
+    void sumDigitsRecursive_singleDigit() {
+        assertEquals(7, DigitSums.sumDigitsRecursive("7"));
+        assertEquals(0, DigitSums.sumDigitsRecursive("0"));
+    }
+
+    @Test
+    void sumDigitsRecursive_maxLength100_allNines() {
+        StringBuilder sb = new StringBuilder(100);
+        for (int i = 0; i < 100; i++) sb.append('9');
+        String s = sb.toString();
+        assertEquals(900, DigitSums.sumDigitsRecursive(s));
+    }
+
+    @Test
+    void sumDigitsRecursive_invalid_nullOrEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive(null));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive(""));
+    }
+
+    @Test
+    void sumDigitsRecursive_invalid_nonDigitCharacters() {
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive("12a3"));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive(" 123"));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive("12-3"));
+        assertThrows(IllegalArgumentException.class, () -> DigitSums.sumDigitsRecursive("1_23"));
+    }
+
 }
