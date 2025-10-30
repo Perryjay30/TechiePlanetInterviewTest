@@ -72,4 +72,54 @@ class StudentScoreServiceImplTest {
 
         assertEquals(new BigDecimal("75"), service.calculateMedian(scores));
     }
+
+    @Test
+    void testModeCalculation() {
+
+        List<BigDecimal> scores = List.of(
+                new BigDecimal("80"), new BigDecimal("90"), new BigDecimal("80"),
+                new BigDecimal("70"), new BigDecimal("60"), new BigDecimal("80")
+        );
+        assertEquals(new BigDecimal("80"), service.calculateMode(scores));
+    }
+
+    @Test
+    void getStudentStatistics_whenRepoEmpty_returnsZeros() {
+        when(studentScoreRepository.findByStudentId(999)).thenReturn(Collections.emptyList());
+
+        StudentStatistics stats = service.getStudentStatistics(999);
+
+        assertEquals(999, stats.getStudentId());
+        assertEquals(BigDecimal.ZERO, stats.getMeanScore());
+        assertEquals(BigDecimal.ZERO, stats.getMedianScore());
+        assertEquals(BigDecimal.ZERO, stats.getModeScore());
+        verify(studentScoreRepository).findByStudentId(999);
+    }
+
+    @Test
+    void getStudentStatistics_computesFromFlattenedFiveSubjectsPerRow() {
+        List<StudentScore> rows = List.of(
+                scoreRow(1, 80, 90, 70, 60, 85),
+                scoreRow(1, 76, 92, 84, 88, 79)
+        );
+        when(studentScoreRepository.findByStudentId(1)).thenReturn(rows);
+
+        StudentStatistics stats = service.getStudentStatistics(1);
+
+        BigDecimal expectedMean = new BigDecimal("803").divide(new BigDecimal("10"), java.math.RoundingMode.HALF_UP);
+
+        expectedMean = new BigDecimal("804").divide(new BigDecimal("10"), java.math.RoundingMode.HALF_UP);
+        assertEquals(expectedMean, stats.getMeanScore());
+
+        List<BigDecimal> flattened = new ArrayList<>();
+        rows.forEach(r -> flattened.addAll(List.of(
+                r.getSubject1Score(), r.getSubject2Score(), r.getSubject3Score(),
+                r.getSubject4Score(), r.getSubject5Score()
+        )));
+        BigDecimal expectedMedian = service.calculateMedian(new ArrayList<>(flattened));
+        assertEquals(expectedMedian, stats.getMedianScore());
+
+        BigDecimal expectedMode = service.calculateMode(flattened);
+        assertEquals(expectedMode, stats.getModeScore());
+    }
 }
