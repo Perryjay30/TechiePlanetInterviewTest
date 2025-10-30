@@ -1,0 +1,55 @@
+version: "3.9"
+services:
+  db:
+    image: postgres:16
+    container_name: students-db
+    environment:
+      POSTGRES_USER: application
+      POSTGRES_PASSWORD: development
+      POSTGRES_DB: studentdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
+
+
+
+#services:
+#  db:
+#    image: postgres:16
+#    environment:
+#      POSTGRES_USER: application
+#      POSTGRES_PASSWORD: development
+#      POSTGRES_DB: studentdb
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - pgdata:/var/lib/postgresql/data
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U application -d studentdb"]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 10
+#
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/studentdb
+#      SPRING_DATASOURCE_USERNAME: application
+#      SPRING_DATASOURCE_PASSWORD: development
+#      JAVA_TOOL_OPTIONS: -Duser.timezone=UTC
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#
+#
+#volumes:
+#  pgdata:
+
