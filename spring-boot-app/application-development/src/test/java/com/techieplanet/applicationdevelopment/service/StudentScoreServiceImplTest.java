@@ -122,4 +122,47 @@ class StudentScoreServiceImplTest {
         BigDecimal expectedMode = service.calculateMode(flattened);
         assertEquals(expectedMode, stats.getModeScore());
     }
+
+    @Test
+    void getStatisticsWithPagination_whenStudentIdProvided_returnsSinglePageIfExists() {
+        int studentId = 7;
+        Pageable pageable = PageRequest.of(0, 10);
+
+        List<StudentScore> rows = List.of(scoreRow(studentId, 50, 60, 70, 80, 90));
+        when(studentScoreRepository.findByStudentId(studentId)).thenReturn(rows);
+
+        Page<StudentStatistics> page = service.getStatisticsWithPagination(Optional.of(studentId), pageable);
+
+        assertEquals(1, page.getTotalElements());
+        assertEquals(1, page.getContent().size());
+        assertEquals(studentId, page.getContent().get(0).getStudentId());
+        verify(studentScoreRepository, atLeastOnce()).findByStudentId(studentId);
+        verify(studentScoreRepository, never()).findDistinctStudentIds(any());
+    }
+
+    @Test
+    void getStatisticsWithPagination_whenNoStudentId_pagesOverDistinctIds() {
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("studentId").ascending());
+        Page<Integer> ids = new PageImpl<>(List.of(1, 2), pageable, 3);
+
+        when(studentScoreRepository.findDistinctStudentIds(pageable)).thenReturn(ids);
+
+        when(studentScoreRepository.findByStudentId(1)).thenReturn(
+                List.of(scoreRow(1, 80, 90, 70, 60, 85))
+        );
+        when(studentScoreRepository.findByStudentId(2)).thenReturn(
+                List.of(scoreRow(2, 88, 76, 92, 81, 75))
+        );
+
+        Page<StudentStatistics> page = service.getStatisticsWithPagination(Optional.empty(), pageable);
+
+        assertEquals(3, page.getTotalElements());
+        assertEquals(2, page.getContent().size());
+        assertEquals(1, page.getContent().get(0).getStudentId());
+        assertEquals(2, page.getContent().get(1).getStudentId());
+
+        verify(studentScoreRepository).findDistinctStudentIds(pageable);
+        verify(studentScoreRepository).findByStudentId(1);
+        verify(studentScoreRepository).findByStudentId(2);
+    }
 }
